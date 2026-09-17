@@ -1,0 +1,266 @@
+.laden-mitte { min-height: 40vh; display: grid; place-items: center; }
+.block { margin-top: 22px; }
+.block-titel { font-size: 1.55rem; margin-bottom: 14px; }
+
+/* ---------- Tisch ---------- */
+.tisch { padding: 30px 26px; }
+
+.seiten {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  grid-template-rows: auto auto auto;
+  align-items: start;
+  gap: 16px;
+}
+
+.spieler { text-align: center; }
+
+/* Namen sind unterschiedlich lang. Mit subgrid liegen Name, Hand und
+   Status bei beiden Spielern trotzdem auf einer Hoehe. */
+@supports (grid-template-rows: subgrid) {
+  .spieler {
+    display: grid;
+    grid-row: 1 / span 3;
+    grid-template-rows: subgrid;
+    align-items: start;
+  }
+  .gegen { grid-column: 2; grid-row: 2; padding-top: 0; align-self: center; }
+}
+
+/* Rueckfall fuer Browser ohne subgrid */
+@supports not (grid-template-rows: subgrid) {
+  .spieler-name { min-height: 2.8em; }
+}
+.spieler-name {
+  margin: 0 0 12px;
+  font-weight: 700;
+  font-size: .95rem;
+  letter-spacing: .01em;
+}
+.spieler-stand {
+  margin: 12px 0 0;
+  font-size: .82rem;
+  color: var(--tinte-weich);
+  min-height: 1.3em;
+}
+.spieler-stand.aktiv { color: var(--stift); font-weight: 600; }
+
+.hand {
+  width: clamp(92px, 26vw, 132px);
+  height: clamp(92px, 26vw, 132px);
+  margin: 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 30px;
+  background: var(--papier);
+  border: 2px dashed var(--linie);
+  transition: background .35s, border-color .35s, transform .4s var(--feder);
+}
+.hand svg { width: 56%; height: 56%; }
+.hand .frage {
+  font-family: var(--schrift-hand);
+  font-size: 3rem;
+  color: var(--linie);
+}
+.hand.gefuellt {
+  background: var(--weiss);
+  border-style: solid;
+  border-color: var(--stift-hell);
+  box-shadow: var(--schatten-m);
+}
+.hand.verdeckt { background: var(--papier-2); border-style: solid; }
+.hand.verdeckt .frage { color: var(--gruen); }
+
+/* Wackeln vor der Auflösung */
+.hand.zittert { animation: zittern .42s var(--sanft) 3; }
+@keyframes zittern {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  50% { transform: translateY(-13px) rotate(-5deg); }
+}
+.hand.aufgedeckt { animation: aufploppen .5s var(--feder); }
+@keyframes aufploppen {
+  0% { transform: scale(.55); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.hand.siegt { border-color: var(--stift); box-shadow: 0 0 0 5px var(--stift-hell), var(--schatten-m); }
+
+.gegen {
+  align-self: center;
+  padding-top: 34px;
+  font-family: var(--schrift-hand);
+  font-size: 1.6rem;
+  color: var(--linie);
+}
+
+/* ---------- Ergebnis ---------- */
+.ergebnis {
+  margin-top: 24px;
+  padding-top: 22px;
+  border-top: 1px solid var(--linie);
+  text-align: center;
+  animation: rein .5s var(--sanft) backwards;
+}
+.ergebnis h2 { font-size: 2rem; margin-bottom: 2px; }
+.ergebnis p { margin: 0; color: var(--tinte-weich); font-size: .92rem; }
+.ergebnis.gewonnen h2 { color: var(--stift); }
+.ergebnis.verloren h2 { color: var(--tinte-weich); }
+.ergebnis.unentschieden h2 { color: var(--blau); }
+
+/* ---------- Auswahl ---------- */
+.auswahl { margin-top: 22px; text-align: center; }
+.auswahl-titel {
+  font-weight: 600;
+  margin: 0 0 16px;
+  color: var(--tinte-weich);
+  font-size: .95rem;
+}
+
+.wahl-reihe {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.wahl {
+  appearance: none;
+  font: inherit;
+  cursor: pointer;
+  width: 104px;
+  padding: 16px 10px 13px;
+  border-radius: var(--r-m);
+  background: var(--weiss);
+  border: 2px solid var(--linie);
+  box-shadow: var(--schatten-s);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  color: var(--tinte);
+  transition: transform .34s var(--feder), box-shadow .3s, border-color .25s, background .25s;
+  animation: rein .45s var(--sanft) backwards;
+  -webkit-tap-highlight-color: transparent;
+}
+.wahl:nth-child(2) { animation-delay: .05s; }
+.wahl:nth-child(3) { animation-delay: .1s; }
+.wahl:nth-child(4) { animation-delay: .15s; }
+.wahl svg { width: 46px; height: 46px; transition: transform .35s var(--feder); }
+.wahl span { font-size: .85rem; font-weight: 600; }
+
+.wahl:hover:not(:disabled) {
+  transform: translateY(-7px);
+  border-color: var(--stift);
+  box-shadow: var(--schatten-l);
+}
+.wahl:hover:not(:disabled) svg { transform: scale(1.14) rotate(-6deg); }
+.wahl:active:not(:disabled) { transform: translateY(-2px) scale(.96); }
+
+.wahl.gewaehlt {
+  border-color: var(--stift);
+  background: var(--stift-hell);
+  transform: translateY(-4px);
+}
+.wahl:disabled { opacity: .4; cursor: default; }
+.wahl.gewaehlt:disabled { opacity: 1; }
+
+/* Brunnen kommt und geht */
+.wahl.faellt { animation: fallen .35s var(--sanft) forwards; }
+@keyframes fallen {
+  to { opacity: 0; transform: translateY(16px) scale(.8); }
+}
+
+.unterleiste {
+  margin-top: 22px;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.mini-hinweis {
+  margin: 10px 0 0;
+  font-size: .8rem;
+  color: var(--tinte-weich);
+  min-height: 1.2em;
+}
+
+/* ---------- Statistik ---------- */
+.statistik {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  text-align: center;
+}
+.stat-kachel {
+  padding: 16px 10px;
+  border-radius: var(--r-m);
+  background: var(--papier);
+}
+.stat-kachel.ich { background: var(--stift-hell); }
+.stat-kachel.du  { background: var(--blau-hell); }
+.stat-zahl {
+  font-family: var(--schrift-hand);
+  font-size: 2.4rem;
+  font-weight: 700;
+  line-height: 1;
+  display: block;
+}
+.stat-text { font-size: .8rem; color: var(--tinte-weich); }
+
+.balken {
+  margin-top: 16px;
+  height: 11px;
+  border-radius: 999px;
+  overflow: hidden;
+  display: flex;
+  background: var(--papier-2);
+}
+.balken-teil { transition: width .8s var(--sanft); }
+.balken-teil.ich { background: var(--stift); }
+.balken-teil.un { background: var(--linie); }
+.balken-teil.du { background: var(--blau); }
+
+/* ---------- Verlauf ---------- */
+.verlauf { list-style: none; margin: 0; padding: 0; }
+.verlauf li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 4px;
+  border-bottom: 1px solid var(--linie);
+  animation: rein .4s var(--sanft) backwards;
+}
+.verlauf li:last-child { border-bottom: none; }
+.v-runde {
+  font-size: .75rem;
+  font-weight: 700;
+  color: var(--tinte-weich);
+  width: 34px;
+  flex: none;
+}
+.v-paar { display: flex; align-items: center; gap: 7px; flex: none; }
+.v-paar svg { width: 26px; height: 26px; }
+.v-paar .v-gegen { color: var(--linie); font-size: .8rem; }
+.v-text { font-size: .88rem; flex: 1; }
+.v-text b { font-weight: 600; }
+.v-zeit { font-size: .75rem; color: var(--tinte-weich); flex: none; }
+.v-punkt { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.v-punkt.ich { background: var(--stift); }
+.v-punkt.du { background: var(--blau); }
+.v-punkt.un { background: var(--linie); }
+
+.leer {
+  text-align: center;
+  color: var(--tinte-weich);
+  font-size: .9rem;
+  padding: 20px 0;
+  margin: 0;
+}
+
+#mehr { margin: 16px auto 0; display: block; }
+
+@media (max-width: 560px) {
+  .tisch { padding: 24px 16px; }
+  .wahl { width: calc(50% - 7px); }
+  .statistik { gap: 8px; }
+  .v-zeit { display: none; }
+}

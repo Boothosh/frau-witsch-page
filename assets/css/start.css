@@ -1,0 +1,180 @@
+.start { max-width: 1000px; }
+
+.laden-schirm {
+  min-height: 60vh;
+  display: grid;
+  place-items: center;
+}
+
+/* ---------- Begrüßung ---------- */
+.gruss { margin: 26px 0 38px; }
+.tageszeit {
+  margin: 0 0 6px;
+  font-size: .82rem;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--stift);
+  animation: rein .5s var(--sanft) backwards;
+}
+.gruss h1 {
+  font-size: clamp(2.6rem, 8vw, 4.2rem);
+  line-height: 1.05;
+  animation: rein .6s .06s var(--sanft) backwards;
+}
+.gruss h1 .name {
+  background: linear-gradient(105deg, var(--stift) 0%, var(--blau) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.winkt {
+  display: inline-block;
+  transform-origin: 70% 75%;
+  animation: winken 2.6s var(--sanft) 1s 2;
+}
+@keyframes winken {
+  0%, 60%, 100% { transform: rotate(0); }
+  10%, 30%, 50% { transform: rotate(14deg); }
+  20%, 40% { transform: rotate(-9deg); }
+}
+
+/* ---------- Anmelde-Kachel ---------- */
+.tor { text-align: center; max-width: 430px; padding: 40px 30px; animation: rein .6s .1s var(--sanft) backwards; }
+.tor-bild svg { width: 76px; height: 76px; margin-bottom: 10px; }
+.tor h2 { font-size: 1.95rem; margin-bottom: 6px; }
+.tor p { color: var(--tinte-weich); margin: 0 0 24px; }
+
+/* ---------- Kachelgitter ---------- */
+.gitter {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.kachel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 26px 24px 24px;
+  min-height: 150px;
+  border-radius: var(--r-l);
+  background: var(--weiss);
+  border: 2px solid var(--linie);
+  box-shadow: var(--schatten-m);
+  text-decoration: none;
+  color: inherit;
+  overflow: hidden;
+  isolation: isolate;
+  transition: transform .4s var(--feder), box-shadow .4s var(--sanft), border-color .3s;
+  animation: rein .6s var(--sanft) backwards;
+}
+.kachel:nth-child(1) { animation-delay: .10s; }
+.kachel:nth-child(2) { animation-delay: .17s; }
+.kachel:nth-child(3) { animation-delay: .24s; }
+.kachel:nth-child(4) { animation-delay: .31s; }
+
+/* Farbiger Schimmer, der beim Hovern aufgeht */
+.kachel::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: auto -30% -60% auto;
+  width: 240px; height: 240px;
+  border-radius: 50%;
+  background: var(--ton);
+  opacity: .5;
+  transform: translate(35%, 35%) scale(.7);
+  transition: transform .55s var(--sanft), opacity .45s;
+}
+.kachel:nth-child(odd)  { transform: rotate(-.5deg); }
+.kachel:nth-child(even) { transform: rotate(.6deg); }
+.kachel:hover {
+  transform: rotate(0deg) translate(-2px, -4px);
+  box-shadow: var(--schatten-l);
+  border-color: var(--tinte-weich);
+}
+.kachel:hover::before { transform: translate(12%, 12%) scale(1.25); opacity: .95; }
+.kachel:active { transform: rotate(0deg) translate(2px, 2px); box-shadow: var(--schatten-s); }
+
+.kachel-bild {
+  width: 56px; height: 56px;
+  display: grid; place-items: center;
+  border-radius: 14px;
+  background: var(--ton);
+  border: 2px solid rgba(43,39,35,.07);
+  margin-bottom: 14px;
+  transition: transform .5s var(--feder), background .3s;
+}
+.kachel:hover .kachel-bild { transform: rotate(-7deg) scale(1.1); background: var(--weiss); }
+.kachel-bild svg { width: 30px; height: 30px; }
+
+.kachel h2 {
+  font-size: 1.6rem;
+  line-height: 1.12;
+  max-width: 15ch;
+}
+
+.kachel-pfeil {
+  margin-top: auto;
+  align-self: flex-end;
+  font-size: 1.15rem;
+  color: var(--tinte-weich);
+  transition: transform .4s var(--feder), color .3s;
+}
+.kachel:hover .kachel-pfeil { transform: translateX(6px); color: var(--stift); }
+
+/* Plakette "du bist dran" */
+.plakette {
+  position: absolute;
+  top: 18px; right: 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px 5px 9px;
+  border-radius: 999px;
+  background: var(--stift);
+  color: #fff;
+  font-size: .73rem;
+  font-weight: 700;
+  letter-spacing: .01em;
+  box-shadow: 0 4px 12px rgba(198,84,63,.3);
+  animation: rein .4s var(--sanft) backwards;
+}
+.plakette::before {
+  content: "";
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #fff;
+  animation: pochen 1.7s var(--sanft) infinite;
+}
+@keyframes pochen {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .4; transform: scale(.75); }
+}
+.plakette.ruhig {
+  background: var(--papier-2);
+  color: var(--tinte-weich);
+  box-shadow: none;
+}
+.plakette.ruhig::before { background: var(--tinte-weich); animation: none; }
+
+/* ---------- Fußzeile ---------- */
+.fuss {
+  margin-top: 52px;
+  padding-top: 24px;
+  border-top: 1px solid var(--linie);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  animation: rein .6s .4s var(--sanft) backwards;
+}
+.fuss-mail { margin: 0; font-size: .85rem; color: var(--tinte-weich); }
+
+@media (max-width: 460px) {
+  .gitter { grid-template-columns: 1fr; }
+  .fuss { flex-direction: column; align-items: stretch; }
+}

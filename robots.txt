@@ -1,0 +1,10 @@
+# Diese Seite soll nicht in Suchmaschinen auftauchen.
+#
+# Das Crawlen ist hier absichtlich NICHT gesperrt: Jede Seite trägt
+# <meta name="robots" content="noindex, nofollow">, und das wirkt nur,
+# wenn die Suchmaschine die Seite auch lesen darf. Ein "Disallow: /"
+# würde genau das verhindern - die Adresse könnte dann trotzdem im
+# Index landen, nur ohne Inhalt.
+
+User-agent: *
+Allow: /

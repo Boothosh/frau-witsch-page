@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bild der Woche</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/bild.css">
+</head>
+<body>
+
+<main class="seite schmal">
+
+  <header class="kopf">
+    <a class="zurueck" href="index.html" aria-label="Zurück zur Startseite">&larr;</a>
+    <div>
+      <h1>Bild der Woche</h1>
+    </div>
+    <span class="schild" id="wochenZeile"></span>
+  </header>
+
+  <div id="laden" class="laden-mitte">
+    <div class="punkte" aria-label="Lädt"><span></span><span></span><span></span></div>
+  </div>
+
+  <div id="meldung"></div>
+
+  <figure id="rahmen" class="rahmen" hidden>
+    <div class="schimmer" id="schimmer"></div>
+    <img id="bild" alt="">
+    <figcaption>
+      <h2 id="titel"></h2>
+      <p class="zaehler" id="zaehler"></p>
+    </figcaption>
+  </figure>
+
+  <p class="naechstes" id="naechstes" hidden></p>
+
+</main>
+
+<script type="module" src="assets/js/bild.js"></script>
+</body>
+</html>

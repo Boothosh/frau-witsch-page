@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nach Zürich</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/zug.css">
+</head>
+<body>
+
+<main class="seite schmal">
+
+  <header class="kopf">
+    <a class="zurueck" href="index.html" aria-label="Zurück zur Startseite">&larr;</a>
+    <div>
+      <h1>Nach Zürich</h1>
+    </div>
+  </header>
+
+  <div id="laden" class="laden-mitte">
+    <div class="punkte" aria-label="Lädt"><span></span><span></span><span></span></div>
+  </div>
+
+  <div id="meldung"></div>
+
+  <article class="ticket" id="ticket" hidden>
+
+    <div class="ticket-oben">
+      <div class="ticket-kopf">
+        <span class="marke">Fahrkarte</span>
+        <span class="tag" id="tag"></span>
+      </div>
+
+      <div class="strecke">
+        <div class="halt">
+          <p class="zeit" id="abZeit"></p>
+          <p class="ort" id="abOrt"></p>
+          <p class="gleis" id="abGleis"></p>
+        </div>
+
+        <div class="strich" aria-hidden="true">
+          <span class="punkt"></span>
+          <span class="linie"><span class="zug-symbol">🚆</span></span>
+          <span class="punkt"></span>
+        </div>
+
+        <div class="halt rechts">
+          <p class="zeit" id="anZeit"></p>
+          <p class="ort" id="anOrt"></p>
+          <p class="gleis" id="anGleis"></p>
+        </div>
+      </div>
+
+      <div class="kennzahlen">
+        <div><span class="kz-wert" id="dauer"></span><span class="kz-text">Fahrzeit</span></div>
+        <div><span class="kz-wert" id="umstiege"></span><span class="kz-text">Umstiege</span></div>
+        <div><span class="kz-wert" id="halte"></span><span class="kz-text">Halte</span></div>
+      </div>
+    </div>
+
+    <div class="perforation" aria-hidden="true"></div>
+
+    <div class="ticket-unten">
+      <div class="abschnitte" id="abschnitte"></div>
+
+      <div class="preis-zeile">
+        <div>
+          <p class="preis-text">Preis</p>
+          <p class="preis-wert">Gratis</p>
+        </div>
+        <div class="streifen" aria-hidden="true"></div>
+      </div>
+
+    </div>
+
+  </article>
+
+  <div class="knopfleiste" id="leiste" hidden>
+    <button class="knopf stumm klein" id="neuLaden">Neu laden</button>
+    <span class="stand" id="stand"></span>
+  </div>
+
+</main>
+
+<script type="module" src="assets/js/zug.js"></script>
+</body>
+</html>

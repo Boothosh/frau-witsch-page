@@ -1,0 +1,316 @@
+.schmal { max-width: 660px; }
+.laden-mitte { min-height: 40vh; display: grid; place-items: center; }
+
+/* ---------- Ticket ---------- */
+.ticket {
+  position: relative;
+  background: var(--weiss);
+  border-radius: var(--r-l);
+  box-shadow: var(--schatten-l);
+  overflow: hidden;
+  animation: ticketRein .65s var(--sanft) backwards;
+}
+@keyframes ticketRein {
+  from { opacity: 0; transform: translateY(22px) rotate(-.6deg); }
+  to   { opacity: 1; transform: none; }
+}
+
+.ticket-oben { padding: 24px 26px 22px; }
+
+.ticket-kopf {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 22px;
+}
+.marke {
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--gruen);
+}
+.tag { font-size: .82rem; color: var(--tinte-weich); font-weight: 500; }
+.tag .morgen {
+  background: var(--gelb-hell);
+  color: #8A6318;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: .72rem;
+  margin-left: 7px;
+}
+
+/* Von - nach */
+.strecke {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 14px;
+}
+.halt.rechts { text-align: right; }
+.zeit {
+  margin: 0;
+  font-family: var(--schrift-hand);
+  font-size: clamp(2.4rem, 8.5vw, 3.2rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -.02em;
+}
+.ort {
+  margin: 6px 0 0;
+  font-size: .84rem;
+  font-weight: 600;
+  color: var(--tinte-weich);
+  max-width: 13ch;
+}
+.halt.rechts .ort { margin-left: auto; }
+.gleis { margin: 2px 0 0; font-size: .74rem; color: var(--tinte-weich); }
+
+.strich { display: flex; align-items: center; gap: 5px; padding-bottom: 26px; }
+.punkt {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--gruen);
+  flex: none;
+}
+.linie {
+  flex: 1;
+  height: 2px;
+  background: repeating-linear-gradient(90deg, var(--linie) 0 6px, transparent 6px 11px);
+  position: relative;
+}
+.zug-symbol {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translate(-50%, -50%);
+  font-size: 1.05rem;
+  animation: fahren 6s var(--sanft) infinite;
+}
+@keyframes fahren {
+  0%   { left: 0; opacity: 0; }
+  12%  { opacity: 1; }
+  88%  { opacity: 1; }
+  100% { left: 100%; opacity: 0; }
+}
+
+/* Kennzahlen */
+.kennzahlen {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  text-align: center;
+}
+.kennzahlen > div {
+  padding: 13px 8px;
+  border-radius: var(--r-m);
+  background: var(--gruen-hell);
+}
+.kz-wert {
+  display: block;
+  font-family: var(--schrift-hand);
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+.kz-text { font-size: .74rem; color: var(--tinte-weich); }
+
+/* ---------- Perforation ---------- */
+.perforation {
+  position: relative;
+  height: 26px;
+  background: var(--weiss);
+}
+.perforation::before,
+.perforation::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: var(--papier);
+  transform: translateY(-50%);
+  box-shadow: inset 0 1px 2px rgba(60,40,30,.08);
+}
+.perforation::before { left: -13px; }
+.perforation::after  { right: -13px; }
+
+.perforation > * { display: none; }
+.ticket::before {
+  content: "";
+  position: absolute;
+  left: 20px; right: 20px;
+  top: 0;
+  height: 0;
+}
+
+/* gestrichelte Linie mittig durch die Perforation */
+.perforation {
+  background-image: repeating-linear-gradient(90deg, var(--linie) 0 7px, transparent 7px 14px);
+  background-size: calc(100% - 36px) 2px;
+  background-position: 18px center;
+  background-repeat: no-repeat;
+}
+
+/* ---------- Unterer Teil ---------- */
+.ticket-unten { padding: 8px 26px 24px; }
+
+.abschnitte { display: flex; flex-direction: column; gap: 10px; }
+
+.abschnitt {
+  border: 1px solid var(--linie);
+  border-radius: var(--r-m);
+  overflow: hidden;
+  background: var(--papier);
+  animation: rein .5s var(--sanft) backwards;
+}
+.abschnitt:nth-child(2) { animation-delay: .07s; }
+.abschnitt:nth-child(3) { animation-delay: .14s; }
+.abschnitt:nth-child(4) { animation-delay: .21s; }
+
+.abschnitt > summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 13px 15px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+  -webkit-tap-highlight-color: transparent;
+  transition: background .2s;
+}
+.abschnitt > summary::-webkit-details-marker { display: none; }
+.abschnitt > summary:hover { background: var(--papier-2); }
+
+.zugnummer {
+  font-size: .74rem;
+  font-weight: 700;
+  letter-spacing: .03em;
+  padding: 5px 10px;
+  border-radius: 8px;
+  background: var(--gruen);
+  color: #fff;
+  white-space: nowrap;
+}
+.zugnummer.fern { background: var(--stift); }
+.zugnummer.fuss { background: var(--linie); color: var(--tinte-weich); }
+
+.ab-strecke { font-size: .85rem; line-height: 1.4; }
+.ab-strecke b { font-weight: 600; }
+.ab-zeiten { font-size: .78rem; color: var(--tinte-weich); }
+
+.pfeil-auf {
+  font-size: .8rem;
+  color: var(--tinte-weich);
+  transition: transform .35s var(--feder);
+}
+.abschnitt[open] .pfeil-auf { transform: rotate(180deg); }
+
+.halte-liste {
+  list-style: none;
+  margin: 0;
+  padding: 4px 15px 15px 15px;
+  border-top: 1px solid var(--linie);
+  background: var(--weiss);
+}
+.halte-liste li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 0 6px 20px;
+  font-size: .82rem;
+  position: relative;
+}
+.halte-liste li::before {
+  content: "";
+  position: absolute;
+  left: 4px; top: 50%;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--linie);
+  transform: translateY(-50%);
+}
+.halte-liste li::after {
+  content: "";
+  position: absolute;
+  left: 7px; top: 50%;
+  width: 1px; height: 100%;
+  background: var(--linie);
+}
+.halte-liste li:last-child::after { display: none; }
+.halte-liste li.wichtig::before { background: var(--gruen); width: 9px; height: 9px; left: 3px; }
+.halte-liste li.wichtig { font-weight: 600; }
+.halte-zeit { color: var(--tinte-weich); font-variant-numeric: tabular-nums; flex: none; }
+
+/* Umstiegshinweis */
+.umstieg {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 4px;
+  font-size: .76rem;
+  color: var(--tinte-weich);
+}
+.umstieg::before,
+.umstieg::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--linie);
+}
+
+/* ---------- Preis ---------- */
+.preis-zeile {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px dashed var(--linie);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+.preis-text {
+  margin: 0;
+  font-size: .72rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--tinte-weich);
+}
+.preis-wert {
+  margin: 2px 0 0;
+  font-family: var(--schrift-hand);
+  font-size: 2.4rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--gruen);
+}
+.streifen {
+  width: 108px; height: 38px;
+  border-radius: 6px;
+  background: repeating-linear-gradient(90deg,
+    var(--tinte) 0 2px, transparent 2px 4px,
+    var(--tinte) 4px 7px, transparent 7px 9px,
+    var(--tinte) 9px 10px, transparent 10px 14px);
+  opacity: .65;
+}
+
+
+/* ---------- Fußleiste ---------- */
+.knopfleiste {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.stand { font-size: .76rem; color: var(--tinte-weich); }
+
+@media (max-width: 460px) {
+  .ticket-oben, .ticket-unten { padding-left: 18px; padding-right: 18px; }
+  .strecke { gap: 8px; }
+  .ort { font-size: .78rem; }
+  .streifen { width: 76px; }
+}

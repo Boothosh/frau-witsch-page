@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anmelden</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/login.css">
+</head>
+<body class="login-body">
+
+<main class="login-huelle">
+  <form class="karte login-karte rein" id="formular" novalidate>
+
+    <div class="login-marke" aria-hidden="true">
+      <svg viewBox="0 0 48 48" fill="none">
+        <path d="M24 40.5S8 31 8 20.5C8 15.3 12.2 11 17.5 11c3 0 5.7 1.6 6.5 4 .8-2.4 3.5-4 6.5-4C35.8 11 40 15.3 40 20.5 40 31 24 40.5 24 40.5Z" fill="#FBE4DE" stroke="#E4705C" stroke-width="2.6" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <h1>Schön, dass du da bist</h1>
+
+    <div id="meldung" role="alert" aria-live="polite"></div>
+
+    <div class="feld">
+      <label for="mail">E-Mail</label>
+      <input id="mail" name="email" type="email" autocomplete="username"
+             inputmode="email" required placeholder="name@beispiel.de">
+    </div>
+
+    <div class="feld">
+      <label for="pw">Passwort</label>
+      <div class="pw-zeile">
+        <input id="pw" name="password" type="password" autocomplete="current-password" required>
+        <button type="button" class="pw-auge" id="pwAuge" aria-label="Passwort anzeigen">
+          <svg viewBox="0 0 24 24" fill="none" width="20" height="20">
+            <path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z" stroke="currentColor" stroke-width="1.8"/>
+            <circle cx="12" cy="12" r="3.2" stroke="currentColor" stroke-width="1.8"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <button class="knopf login-knopf" id="absenden" type="submit">
+      <span class="knopf-text">Anmelden</span>
+    </button>
+
+    <a class="login-zurueck" href="index.html">Zurück zur Startseite</a>
+  </form>
+</main>
+
+<script type="module" src="assets/js/login.js"></script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Schere, Stein, Papier</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/ssp.css">
+</head>
+<body>
+
+<main class="seite">
+
+  <header class="kopf">
+    <a class="zurueck" href="index.html" aria-label="Zurück zur Startseite">&larr;</a>
+    <div>
+      <h1>Schere, Stein, Papier</h1>
+    </div>
+    <span class="schild" id="rundenZeile"></span>
+  </header>
+
+  <div id="laden" class="laden-mitte">
+    <div class="punkte" aria-label="Lädt"><span></span><span></span><span></span></div>
+  </div>
+
+  <div id="buehne" hidden>
+
+    <!-- Die beiden Spielerfelder -->
+    <section class="tisch karte">
+      <div class="seiten">
+        <div class="spieler" id="spielerIch">
+          <p class="spieler-name">Du</p>
+          <div class="hand" id="handIch"><span class="frage">?</span></div>
+          <p class="spieler-stand" id="standIch">Du bist dran</p>
+        </div>
+
+        <div class="gegen" aria-hidden="true">
+          <span id="gegenText">vs</span>
+        </div>
+
+        <div class="spieler" id="spielerDu">
+          <p class="spieler-name" id="nameAndere">Sie</p>
+          <div class="hand" id="handDu"><span class="frage">?</span></div>
+          <p class="spieler-stand" id="standDu">wartet</p>
+        </div>
+      </div>
+
+      <div class="ergebnis" id="ergebnis" hidden></div>
+    </section>
+
+    <!-- Auswahl -->
+    <section class="auswahl" id="auswahl">
+      <p class="auswahl-titel" id="auswahlTitel">Was nimmst du?</p>
+      <div class="wahl-reihe" id="wahlReihe"></div>
+
+      <div class="unterleiste">
+        <button class="knopf stumm klein" id="brunnenKnopf" disabled></button>
+        <button class="knopf klein" id="neueRunde" hidden>Nächste Runde</button>
+      </div>
+      <p class="mini-hinweis" id="brunnenHinweis"></p>
+    </section>
+
+    <!-- Statistik -->
+    <section class="karte block">
+      <h2 class="block-titel">Wie es bisher steht</h2>
+      <div class="statistik" id="statistik"></div>
+      <div class="balken" id="balken" hidden>
+        <div class="balken-teil ich" id="balkenIch"></div>
+        <div class="balken-teil un" id="balkenUn"></div>
+        <div class="balken-teil du" id="balkenDu"></div>
+      </div>
+    </section>
+
+    <!-- Verlauf -->
+    <section class="karte block">
+      <h2 class="block-titel">Verlauf</h2>
+      <ul class="verlauf" id="verlauf"></ul>
+      <button class="knopf stumm klein" id="mehr" hidden>Mehr anzeigen</button>
+    </section>
+
+  </div>
+</main>
+
+<script type="module" src="assets/js/ssp.js"></script>
+</body>
+</html>

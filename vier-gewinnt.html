@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>4 Gewinnt</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/vier.css">
+</head>
+<body>
+
+<main class="seite">
+
+  <header class="kopf">
+    <a class="zurueck" href="index.html" aria-label="Zurück zur Startseite">&larr;</a>
+    <div>
+      <h1>4 Gewinnt</h1>
+    </div>
+    <span class="schild" id="spielZeile"></span>
+  </header>
+
+  <div id="laden" class="laden-mitte">
+    <div class="punkte" aria-label="Lädt"><span></span><span></span><span></span></div>
+  </div>
+
+  <div id="buehne" hidden>
+
+    <!-- Wer ist dran -->
+    <section class="leiste karte">
+      <div class="partei" id="parteiIch">
+        <span class="chip" id="chipIch"></span>
+        <div>
+          <p class="partei-name">Du</p>
+          <p class="partei-sieg" id="siegeIch">0 Siege</p>
+        </div>
+      </div>
+
+      <p class="dran" id="dran">…</p>
+
+      <div class="partei rechts" id="parteiDu">
+        <div>
+          <p class="partei-name" id="nameAndere">Sie</p>
+          <p class="partei-sieg" id="siegeDu">0 Siege</p>
+        </div>
+        <span class="chip" id="chipDu"></span>
+      </div>
+    </section>
+
+    <!-- Brett -->
+    <section class="brett-huelle">
+      <div class="wurfleiste" id="wurfleiste" role="group" aria-label="Spalte wählen"></div>
+      <div class="brett" id="brett"></div>
+    </section>
+
+    <div id="meldung"></div>
+
+    <div class="knopfleiste">
+      <button class="knopf" id="neuesSpiel" hidden>Neues Spiel</button>
+      <button class="knopf stumm klein" id="aufgeben" hidden>Spiel abbrechen</button>
+    </div>
+
+    <!-- Verlauf -->
+    <section class="karte block">
+      <h2 class="block-titel">Verlauf</h2>
+      <ul class="verlauf" id="verlauf"></ul>
+      <button class="knopf stumm klein" id="mehr" hidden>Mehr anzeigen</button>
+    </section>
+
+  </div>
+</main>
+
+<script type="module" src="assets/js/vier.js"></script>
+</body>
+</html>

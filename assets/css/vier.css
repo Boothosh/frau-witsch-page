@@ -1,0 +1,192 @@
+.laden-mitte { min-height: 40vh; display: grid; place-items: center; }
+.block { margin-top: 22px; }
+.block-titel { font-size: 1.55rem; margin-bottom: 14px; }
+
+/* ---------- Kopfleiste ---------- */
+.leiste {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+}
+.partei { display: flex; align-items: center; gap: 11px; }
+.partei.rechts { justify-content: flex-end; text-align: right; }
+.partei-name { margin: 0; font-weight: 700; font-size: .95rem; }
+.partei-sieg { margin: 0; font-size: .78rem; color: var(--tinte-weich); }
+
+.chip {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  flex: none;
+  box-shadow: inset 0 -3px 0 rgba(0,0,0,.12);
+  background: var(--linie);
+  transition: background .3s, box-shadow .3s;
+}
+.chip.rot  { background: var(--stift); box-shadow: inset 0 -3px 0 rgba(0,0,0,.16); }
+.chip.gelb { background: var(--gelb); box-shadow: inset 0 -3px 0 rgba(0,0,0,.14); }
+
+.partei.aktiv .chip { animation: chipPochen 1.8s var(--sanft) infinite; }
+@keyframes chipPochen {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.14); }
+}
+
+.dran {
+  margin: 0;
+  font-size: .82rem;
+  font-weight: 600;
+  text-align: center;
+  color: var(--tinte-weich);
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--papier);
+}
+.dran.duBist { color: #fff; background: var(--stift); }
+
+/* ---------- Brett ---------- */
+.brett-huelle { margin-top: 20px; }
+
+.wurfleiste {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: clamp(5px, 1.1vw, 10px);
+  max-width: 620px;
+  margin: 0 auto 8px;
+  padding: 0 clamp(8px, 1.6vw, 14px);
+}
+.wurf {
+  appearance: none;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  height: 30px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  color: var(--tinte-weich);
+  font-size: 1.1rem;
+  transition: background .2s, color .2s, transform .3s var(--feder);
+  -webkit-tap-highlight-color: transparent;
+}
+.wurf span {
+  opacity: .4;
+  transform: translateY(2px);
+  transition: opacity .25s, transform .3s var(--feder);
+}
+/* Auf dem Tablet gibt es kein Hovern, deshalb sind die Pfeile immer zu sehen. */
+.wurf:disabled span { opacity: .12; }
+.wurf:hover:not(:disabled) span,
+.wurf:focus-visible span { opacity: 1; transform: none; }
+.wurf:hover:not(:disabled) { background: var(--papier-2); }
+.wurf:active:not(:disabled) { transform: scale(.9); }
+.wurf:disabled { cursor: not-allowed; }
+
+.brett {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: clamp(5px, 1.1vw, 10px);
+  max-width: 620px;
+  margin: 0 auto;
+  padding: clamp(8px, 1.6vw, 14px);
+  border-radius: var(--r-l);
+  background: linear-gradient(160deg, #4F729E, #3E5F8A);
+  border: 2px solid #33506F;
+  box-shadow: var(--schatten-l), inset 0 2px 0 rgba(255,255,255,.18);
+}
+
+.feld {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--papier);
+  box-shadow: inset 0 3px 6px rgba(60,40,30,.16);
+  position: relative;
+  overflow: hidden;
+  transition: background .25s;
+}
+.feld.warm { background: #E7EDF5; }
+
+.stein {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  box-shadow: inset 0 -4px 0 rgba(0,0,0,.15), inset 0 3px 5px rgba(255,255,255,.35);
+}
+.stein.rot  { background: var(--stift); }
+.stein.gelb { background: var(--gelb); }
+
+.stein.faellt { animation: fallenlassen .48s cubic-bezier(.45,.05,.35,1) ; }
+@keyframes fallenlassen {
+  0%   { transform: translateY(var(--weg, -400%)); }
+  70%  { transform: translateY(0); }
+  82%  { transform: translateY(-11%); }
+  100% { transform: translateY(0); }
+}
+
+.stein.siegt { animation: leuchten 1.3s var(--sanft) infinite; z-index: 1; }
+@keyframes leuchten {
+  0%, 100% { box-shadow: inset 0 -4px 0 rgba(0,0,0,.15), 0 0 0 0 rgba(255,255,255,.85); transform: scale(1); }
+  50%      { box-shadow: inset 0 -4px 0 rgba(0,0,0,.15), 0 0 0 7px rgba(255,255,255,.55); transform: scale(1.06); }
+}
+
+.feld.letzter::after {
+  content: "";
+  position: absolute;
+  inset: 34%;
+  border-radius: 50%;
+  background: rgba(255,255,255,.55);
+}
+
+/* ---------- Meldung & Knöpfe ---------- */
+#meldung { margin-top: 20px; }
+#meldung .hinweis { text-align: center; font-size: 1rem; }
+.gross-meldung {
+  text-align: center;
+  padding: 22px;
+  border-radius: var(--r-l);
+  background: var(--weiss);
+  border: 1px solid var(--linie);
+  box-shadow: var(--schatten-m);
+  animation: rein .5s var(--sanft) backwards;
+}
+.gross-meldung h2 { font-size: 2rem; margin-bottom: 2px; }
+.gross-meldung p { margin: 0; color: var(--tinte-weich); font-size: .92rem; }
+.gross-meldung.gewonnen h2 { color: var(--stift); }
+.gross-meldung.unentschieden h2 { color: var(--blau); }
+
+.knopfleiste {
+  margin-top: 18px;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* ---------- Verlauf ---------- */
+.verlauf { list-style: none; margin: 0; padding: 0; }
+.verlauf li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 4px;
+  border-bottom: 1px solid var(--linie);
+  animation: rein .4s var(--sanft) backwards;
+}
+.verlauf li:last-child { border-bottom: none; }
+.v-nr { font-size: .75rem; font-weight: 700; color: var(--tinte-weich); width: 36px; flex: none; }
+.v-chip { width: 16px; height: 16px; border-radius: 50%; flex: none; }
+.v-chip.rot { background: var(--stift); }
+.v-chip.gelb { background: var(--gelb); }
+.v-chip.un { background: var(--linie); }
+.v-text { font-size: .88rem; flex: 1; }
+.v-text b { font-weight: 600; }
+.v-zeit { font-size: .75rem; color: var(--tinte-weich); flex: none; }
+
+.leer { text-align: center; color: var(--tinte-weich); font-size: .9rem; padding: 20px 0; margin: 0; }
+#mehr { margin: 16px auto 0; display: block; }
+
+@media (max-width: 560px) {
+  .leiste { grid-template-columns: 1fr; justify-items: center; gap: 10px; }
+  .partei.rechts { flex-direction: row-reverse; text-align: left; }
+  .v-zeit { display: none; }
+}

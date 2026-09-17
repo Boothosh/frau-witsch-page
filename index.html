@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zuhause</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/start.css">
+</head>
+<body>
+
+<main class="seite start">
+
+  <div id="laden" class="laden-schirm">
+    <div class="punkte" aria-label="Lädt"><span></span><span></span><span></span></div>
+  </div>
+
+  <div id="inhalt" hidden>
+
+    <header class="gruss">
+      <p class="tageszeit" id="tageszeit"></p>
+      <h1 id="anrede"></h1>
+    </header>
+
+    <!-- abgemeldet -->
+    <section id="abgemeldet" class="karte tor" hidden>
+      <div class="tor-bild" aria-hidden="true">
+        <svg viewBox="0 0 64 64" fill="none">
+          <rect x="13" y="28" width="38" height="28" rx="8" fill="#FBE4DE" stroke="#E4705C" stroke-width="2.5"/>
+          <path d="M23 28v-8a9 9 0 0 1 18 0v8" stroke="#E4705C" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="32" cy="41" r="4" fill="#E4705C"/>
+        </svg>
+      </div>
+      <h2>Kleiner Moment</h2>
+      <p>Die Seite ist privat. Melde dich an, dann geht's weiter.</p>
+      <a class="knopf" href="login.html">Anmelden</a>
+    </section>
+
+    <!-- angemeldet -->
+    <section id="angemeldet" hidden>
+      <div class="gitter" id="gitter"></div>
+
+      <footer class="fuss">
+        <p class="fuss-mail" id="fussMail"></p>
+        <button class="knopf stumm klein" id="abmelden">Abmelden</button>
+      </footer>
+    </section>
+
+  </div>
+</main>
+
+<script type="module" src="assets/js/start.js"></script>
+</body>
+</html>
