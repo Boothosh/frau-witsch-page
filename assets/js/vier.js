@@ -1,7 +1,7 @@
 import { db, seiteSchuetzen, nameVon, nameVonUid, anderePerson } from "./firebase.js";
 import {
   doc, setDoc, onSnapshot, runTransaction, collection,
-  query, orderBy, serverTimestamp
+  query, orderBy, serverTimestamp, getDocFromServer
 } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 import { SPALTEN, ZEILEN, FELDER, leeresBrett, zug, spalteVoll } from "./vier-logik.js";
 import { wellenAktivieren, konfetti, vorWieLange, leeren } from "./ui.js";
@@ -50,16 +50,8 @@ seiteSchuetzen(async user => {
   brettBauen();
   await spielSicherstellen();
 
-  onSnapshot(standRef,
-    s => {
-      stand = s.data() || null;
-      try { zeichnen(); } catch (e) { console.error("Zeichnen fehlgeschlagen", e); }
-      if (stand) buehneZeigen();
-    },
-    e => {
-      buehneZeigen();
-      hinweis("fehler", "Der Spielstand ist nicht erreichbar. " + fehlerText(e));
-    });
+  standBeobachten();
+  abgleichStarten();
 
   onSnapshot(query(verlaufRef, orderBy("spielNr", "desc")),
     s => {
@@ -70,6 +62,61 @@ seiteSchuetzen(async user => {
     e => console.warn("Verlauf nicht lesbar", e));
 
 });
+
+/* ---------- Stand empfangen ---------- */
+
+/** Reihenfolge eines Stands: neues Spiel schlaegt alten Zug. */
+const standSchluessel = d => zahlOder(d && d.spielNr, 0) * 1000 + zahlOder(d && d.zuege, 0);
+
+/** Uebernimmt einen Stand, egal woher er kommt (Listener, Abfrage, eigener Zug).
+    Aeltere Staende werden ignoriert, damit ein verspaeteter Snapshot nichts zuruecksetzt. */
+function standUebernehmen(daten) {
+  if (!daten) return;
+  if (stand && standSchluessel(daten) < standSchluessel(stand)) return;
+  stand = daten;
+  try { zeichnen(); } catch (e) { console.error("Zeichnen fehlgeschlagen", e); }
+  buehneZeigen();
+}
+
+let abmelden = null;
+function standBeobachten() {
+  if (abmelden) abmelden();
+  abmelden = onSnapshot(standRef,
+    s => standUebernehmen(s.data() || null),
+    e => {
+      buehneZeigen();
+      hinweis("fehler", "Der Spielstand ist nicht erreichbar. " + fehlerText(e));
+    });
+}
+
+/** Der Listener bleibt auf manchen Geraeten (Standby, Tab im Hintergrund,
+    Netzwechsel) stumm haengen. Darum regelmaessig direkt beim Server
+    nachfragen und den Listener neu starten, wenn er etwas verpasst hat. */
+let fragtGerade = false;
+async function abgleichen() {
+  if (fragtGerade || document.hidden) return;
+  fragtGerade = true;
+  try {
+    const s = await getDocFromServer(standRef);
+    const daten = s.data();
+    if (daten && (!stand || standSchluessel(daten) > standSchluessel(stand))) {
+      standUebernehmen(daten);
+      standBeobachten();
+    }
+  } catch (e) {
+    /* offline - beim naechsten Mal wieder */
+  } finally {
+    fragtGerade = false;
+  }
+}
+
+function abgleichStarten() {
+  setInterval(abgleichen, 4000);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) abgleichen(); });
+  window.addEventListener("focus", abgleichen);
+  window.addEventListener("online", abgleichen);
+  window.addEventListener("pageshow", abgleichen);
+}
 
 function brettBauen() {
   const leiste = E("wurfleiste");
@@ -280,25 +327,30 @@ async function werfen(spalte) {
   const gegner = stand.rot === ich.uid ? stand.gelb : stand.rot;
 
   try {
-    await runTransaction(db, async t => {
+    const neu = await runTransaction(db, async t => {
       const s = await t.get(standRef);
       const d = s.data();
-      if (!d || d.gewinner || d.amZug !== ich.uid) return;   // zwischenzeitlich verändert
+      if (!d || d.gewinner || d.amZug !== ich.uid) return null;   // zwischenzeitlich verändert
 
       const ergebnis = zug(d.brett || leeresBrett(), spalte, meine);
-      if (!ergebnis) return;
+      if (!ergebnis) return null;
 
-      t.update(standRef, {
+      const aenderungen = {
         brett: ergebnis.brett,
         letzterZug: ergebnis.index,
         zuege: (d.zuege || 0) + 1,
         amZug: ergebnis.sieg || ergebnis.voll ? d.amZug : gegner,
         gewinner: ergebnis.sieg ? ich.uid : (ergebnis.voll ? "unentschieden" : null),
-        siegFelder: ergebnis.sieg || [],
-        zuletzt: serverTimestamp()
-      });
+        siegFelder: ergebnis.sieg || []
+      };
+      t.update(standRef, { ...aenderungen, zuletzt: serverTimestamp() });
+      return { ...d, ...aenderungen };
     });
-  } catch (e) { console.error(e); }
+    /* Transaktionen zeigen nichts lokal an - den eigenen Zug also direkt zeichnen,
+       statt auf den Listener zu warten. */
+    if (neu) standUebernehmen(neu);
+    else abgleichen();
+  } catch (e) { console.error(e); abgleichen(); }
 }
 
 E("neuesSpiel").addEventListener("click", () => neuesSpiel(true));
@@ -310,23 +362,23 @@ async function neuesSpiel(tauschen) {
   const meine = zahlOder(stand && stand.spielNr, null);
 
   try {
-    await runTransaction(db, async t => {
+    const neu = await runTransaction(db, async t => {
       const s = await t.get(standRef);
       const d = s.data();
-      if (!d) return;
+      if (!d) return null;
 
       const serverNr = zahlOder(d.spielNr, null);
 
       /* Nur abbrechen, wenn wirklich jemand anderes schon ein neues Spiel
          gestartet hat. Fehlende oder kaputte Nummern nicht als Konflikt
          werten - sonst liesse sich nie wieder zuruecksetzen. */
-      if (meine !== null && serverNr !== null && serverNr !== meine) return;
+      if (meine !== null && serverNr !== null && serverNr !== meine) return null;
 
       /* Farben tauschen, damit nicht immer dieselbe Person anfängt. */
       const rot = tauschen ? (d.gelb || d.rot) : d.rot;
       const gelb = tauschen ? d.rot : d.gelb;
 
-      t.update(standRef, {
+      const aenderungen = {
         spielNr: (serverNr === null ? 0 : serverNr) + 1,
         brett: leeresBrett(),
         rot, gelb,
@@ -334,10 +386,13 @@ async function neuesSpiel(tauschen) {
         zuege: 0,
         gewinner: null,
         siegFelder: [],
-        letzterZug: null,
-        begonnen: serverTimestamp()
-      });
+        letzterZug: null
+      };
+      t.update(standRef, { ...aenderungen, begonnen: serverTimestamp() });
+      return { ...d, ...aenderungen };
     });
+    if (neu) standUebernehmen(neu);
+    else abgleichen();
   } catch (e) {
     console.error(e);
     hinweis("fehler", "Das neue Spiel liess sich nicht starten. " + fehlerText(e));

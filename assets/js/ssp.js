@@ -1,7 +1,7 @@
 import { db, auth, seiteSchuetzen, nameVon, nameVonUid, anderePerson } from "./firebase.js";
 import {
   doc, setDoc, onSnapshot, runTransaction, collection,
-  query, orderBy, serverTimestamp, updateDoc, deleteField
+  query, orderBy, serverTimestamp, updateDoc, deleteField, getDocFromServer
 } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 import { ZEICHEN, BEZEICHNUNG, SPIELZUEGE, vergleiche } from "./symbole.js";
 import { wellenAktivieren, konfetti, vorWieLange, el, leeren } from "./ui.js";
@@ -46,17 +46,8 @@ seiteSchuetzen(async user => {
 
   await standSicherstellen();
 
-  onSnapshot(standRef,
-    s => {
-      stand = s.data() || null;
-      try { zeichnen(); } catch (e) { console.error("Zeichnen fehlgeschlagen", e); }
-      if (stand) buehneZeigen();
-    },
-    e => {
-      buehneZeigen();
-      E("brunnenHinweis").textContent = "Der Spielstand ist gerade nicht erreichbar.";
-      console.error(e);
-    });
+  standBeobachten();
+  abgleichStarten();
 
   onSnapshot(query(verlaufRef, orderBy("runde", "desc")),
     s => {
@@ -66,6 +57,80 @@ seiteSchuetzen(async user => {
     },
     e => console.warn("Verlauf nicht lesbar", e));
 });
+
+/* ---------- Stand empfangen ---------- */
+
+/** Uebernimmt einen Stand, egal woher er kommt. Eine aeltere Runde wird
+    ignoriert, damit ein verspaeteter Snapshot nichts zuruecksetzt. */
+function standUebernehmen(daten) {
+  if (!daten) return;
+  const alt = zahlOder(stand && stand.runde, -1);
+  const neu = zahlOder(daten.runde, -1);
+  if (stand && neu < alt) return;
+  stand = daten;
+  try { zeichnen(); } catch (e) { console.error("Zeichnen fehlgeschlagen", e); }
+  buehneZeigen();
+}
+
+let abmelden = null;
+let snapshotZaehler = 0;
+let wartetAufServer = false;   // eigene Aenderung noch nicht bestaetigt
+
+function standBeobachten() {
+  if (abmelden) abmelden();
+  abmelden = onSnapshot(standRef,
+    s => {
+      snapshotZaehler++;
+      wartetAufServer = s.metadata.hasPendingWrites;
+      standUebernehmen(s.data() || null);
+    },
+    e => {
+      buehneZeigen();
+      E("brunnenHinweis").textContent = "Der Spielstand ist gerade nicht erreichbar.";
+      console.error(e);
+    });
+}
+
+/** Das, was man auf dem Bildschirm sieht - zum Vergleich mit dem Server. */
+function fingerabdruck(d) {
+  if (!d) return "";
+  const wahl = d.wahl || {};
+  const paare = Object.keys(wahl).sort().map(k => k + "=" + wahl[k]);
+  return `${d.runde}|${d.mitBrunnen !== false}|${paare.join(",")}`;
+}
+
+/** Der Listener bleibt auf manchen Geraeten (Standby, Tab im Hintergrund,
+    Netzwechsel) stumm haengen. Darum regelmaessig direkt beim Server
+    nachfragen und den Listener neu starten, wenn er etwas verpasst hat. */
+let fragtGerade = false;
+async function abgleichen() {
+  if (fragtGerade || document.hidden) return;
+  fragtGerade = true;
+  const zaehlerVorher = snapshotZaehler;
+  try {
+    const s = await getDocFromServer(standRef);
+    const daten = s.data();
+    /* Kam waehrenddessen ein Snapshot oder ist eine eigene Aenderung noch
+       unterwegs, ist die Antwort womoeglich schon veraltet. */
+    if (snapshotZaehler !== zaehlerVorher || wartetAufServer) return;
+    if (daten && fingerabdruck(daten) !== fingerabdruck(stand)) {
+      standUebernehmen(daten);
+      standBeobachten();
+    }
+  } catch (e) {
+    /* offline - beim naechsten Mal wieder */
+  } finally {
+    fragtGerade = false;
+  }
+}
+
+function abgleichStarten() {
+  setInterval(abgleichen, 4000);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) abgleichen(); });
+  window.addEventListener("focus", abgleichen);
+  window.addEventListener("online", abgleichen);
+  window.addEventListener("pageshow", abgleichen);
+}
 
 async function standSicherstellen() {
   try {
@@ -230,22 +295,26 @@ E("neueRunde").addEventListener("click", async e => {
   b.disabled = true;
   const meine = zahlOder(stand && stand.runde, null);
   try {
-    await runTransaction(db, async t => {
+    const neu = await runTransaction(db, async t => {
       const s = await t.get(standRef);
       const d = s.data();
-      if (!d) return;
+      if (!d) return null;
 
       const serverRunde = zahlOder(d.runde, null);
       /* Nur abbrechen, wenn jemand anderes schon weitergeschaltet hat. */
-      if (meine !== null && serverRunde !== null && serverRunde !== meine) return;
+      if (meine !== null && serverRunde !== null && serverRunde !== meine) return null;
 
-      t.update(standRef, {
+      const aenderungen = {
         runde: (serverRunde === null ? 0 : serverRunde) + 1,
-        wahl: {},
-        aktualisiert: serverTimestamp()
-      });
+        wahl: {}
+      };
+      t.update(standRef, { ...aenderungen, aktualisiert: serverTimestamp() });
+      return { ...d, ...aenderungen };
     });
-  } catch (err) { console.error(err); }
+    /* Transaktionen zeigen nichts lokal an - die neue Runde also direkt zeichnen. */
+    if (neu) standUebernehmen(neu);
+    else abgleichen();
+  } catch (err) { console.error(err); abgleichen(); }
   finally { b.disabled = false; }
 });
 
